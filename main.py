@@ -1,12 +1,12 @@
+import os
+import shutil
+from config import OUTPUT_DIR, ROI_BASE_PATH, VIDEO_BASE_PATH
+
 from roi_selector import roi_selector_initial_frame
 from detector import yolo_video_detector
 from agent_analyzer import gemini_api_llm, generar_reporte_desde_jsones
 from twilio_whatsapp_conection import whatsapp_conection
 from datetime import datetime
-import os
-import shutil
-from config import OUTPUT_DIR, ROI_BASE_PATH, VIDEO_BASE_PATH
-
 
 def main():
 
