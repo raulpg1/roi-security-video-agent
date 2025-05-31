@@ -12,4 +12,4 @@ def whatsapp_conection(respuesta_modelo):
         body=respuesta_modelo[:1599]
     )
 
-    print("[twilio]\t\tSe ha enviado el reporte vía whatsapp.")
+    print("[twilio]\tSe ha enviado el reporte vía whatsapp.")

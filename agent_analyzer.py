@@ -45,7 +45,7 @@ def gemini_api_llm(user_prompt: str, retries: int = 3) -> dict | None:
     """
 
     genai.configure(api_key=GOOGLE_API_KEY)
-
+    print("[GEMINI]\tGenerando el reporte en base a las detecciones.")
     try:
         model = genai.GenerativeModel(MODEL_NAME)
     except Exception as e:

@@ -2,6 +2,8 @@
 *.pt
 *.jpg
 *.json
+*.npy
+
 # Byte-compiled / optimized / DLL file
 __pycache__/
 *.py[cod]

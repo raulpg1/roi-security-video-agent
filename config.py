@@ -8,7 +8,7 @@ load_dotenv(".env")
 OUTPUT_DIR = os.getenv("OUTPUT_DIR", "./detections")
 ROI_BASE_PATH = os.getenv("ROI_BASE_PATH", "./roi_masks")
 VIDEO_BASE_PATH = os.getenv("VIDEO_BASE_PATH", "./videos/")
-YOLO_MODEL_NAME = os.getenv("YOLO_MODEL_NAME", "..weights/yolov8n.pt")
+YOLO_MODEL_NAME = os.getenv("YOLO_MODEL_NAME", "./weights/yolov8n.pt")
 
 # Parámetros de detección
 UMBRAL_CONF = float(os.getenv("UMBRAL_CONF", 0.4))
