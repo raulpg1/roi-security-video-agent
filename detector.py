@@ -1,6 +1,7 @@
 import os
 import cv2
 import json
+import easyocr
 import numpy as np
 
 from ultralytics import YOLO
@@ -96,3 +97,42 @@ def yolo_video_detector(objetos_interes, roi_mask_file_path, video_path):
 
     cap.release()
     print(f"[YOLO]\t\tGuardados {saved_count} frames con detecciones dentro del ROI.")
+    
+def license_plate_detector():
+    reader = easyocr.Reader(['en'])
+    detections = {}
+
+    for filename in os.listdir(OUTPUT_DIR):
+        if filename.endswith('.json'):
+            json_path = os.path.join(OUTPUT_DIR, filename)
+            image_path = os.path.join(OUTPUT_DIR, filename.replace('.json', '.jpg'))
+
+            if not os.path.exists(image_path):
+                continue
+
+            with open(json_path, 'r') as f:
+                data = json.load(f)
+
+            image = cv2.imread(image_path)
+            image_detections = {}
+
+            for idx, obj in enumerate(data.get('objects', [])):
+                label = obj.get('label')
+                if label in ['car', 'bus', 'truck', 'motorcycle']:
+                    x1, y1, x2, y2 = obj['bbox']
+                    plate_region = image[y1:y2, x1:x2]
+                    results = reader.readtext(plate_region)
+
+                    for (_, text, confidence) in results:
+                        if confidence > 0.7:
+                            image_detections[str(idx)] = {
+                                'plate': text,
+                                'confidence': confidence
+                            }
+                            break
+                    else:
+                        image_detections[str(idx)] = None  # No OCR válido
+
+            detections[filename] = image_detections
+
+    return detections

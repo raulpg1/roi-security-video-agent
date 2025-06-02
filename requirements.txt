@@ -1,5 +1,7 @@
 ultralytics
+easyocr
 opencv-python
 numpy
 twilio
 google-generativeai
+dotenv

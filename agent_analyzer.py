@@ -3,23 +3,39 @@ import json
 from collections import defaultdict
 import google.generativeai as genai
 from config import MODEL_NAME, GOOGLE_API_KEY, OUTPUT_DIR
+from detector import license_plate_detector
 
 def generar_reporte_desde_jsones():
     resumen = defaultdict(int)
     eventos = []
 
     archivos = sorted([f for f in os.listdir(OUTPUT_DIR) if f.endswith(".json")])
+    ocr_results = license_plate_detector()
 
     for archivo in archivos:
         ruta = os.path.join(OUTPUT_DIR, archivo)
+
         with open(ruta, "r") as f:
             data = json.load(f)
             time = data.get("time", "desconocido")
-            for obj in data.get("objects", []):
-                resumen[obj["label"]] += 1
-                eventos.append(f"{obj['label']} detectado a las {time}")
 
-    # Crear resumen en lenguaje natural
+            objetos = data.get("objects", [])
+            ocr_info = ocr_results.get(archivo, {})
+
+            for idx, obj in enumerate(objetos):
+                label = obj["label"]
+                resumen[label] += 1
+                evento = f"{label} detectado a las {time}"
+
+                if label in ["car", "bus", "truck", "motorcycle","bicycle"]:
+                    resultado = ocr_info.get(str(idx))
+                    if resultado:
+                        evento += f" con matrícula detectada: `{resultado['plate']}`"
+                    else:
+                        evento += " pero no se pudo reconocer la matrícula"
+
+                eventos.append(evento)
+
     if not eventos:
         return "No se han detectado eventos relevantes en el período analizado."
 
@@ -28,7 +44,7 @@ def generar_reporte_desde_jsones():
         resumen_texto += f"- {cantidad} detección(es) de *{clase}*\n"
 
     resumen_texto += "\n🕒 *Eventos detectados:*\n"
-    resumen_texto += "\n".join(f"- {e}" for e in eventos[-5:])  # últimos 5 eventos
+    resumen_texto += "\n".join(f"- {e}" for e in eventos[-5:])
 
     return resumen_texto
 
